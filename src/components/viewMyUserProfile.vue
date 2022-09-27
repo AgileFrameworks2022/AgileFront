@@ -81,7 +81,7 @@
               Edit Information
             </v-btn>
 
-            <v-btn v-if="this.$route.params.id===this.userId" class="white--text red" @click="reportUser">
+            <v-btn v-if="this.$route.params.id!==this.userId" class="white--text red" @click="reportUser">
               Report User
             </v-btn>
           </v-card-actions>

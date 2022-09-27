@@ -2,6 +2,7 @@
 import http from "./http-common"
 
 class AddServices {
+
     postNewAd(data){
         return http.post("/Advertisements",data);
     }

@@ -1,7 +1,6 @@
 import http from "./http-common"
 import UsersService from "./users.service"
 // import axios from "axios";
-// const API_URL = 'https://webapp-220818223116.azurewebsites.net/api/v1/adoptionsrequests';
 class NotificationService {
 
 

@@ -1,8 +1,5 @@
 import http from "./http-auth"
 // import axios from 'axios';
-// const API_URL = 'https://webapp-220818223116.azurewebsites.net/api/v1/users';
-
-
 
 class UsersService {
 

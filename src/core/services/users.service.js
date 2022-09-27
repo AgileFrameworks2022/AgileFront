@@ -1,5 +1,4 @@
 import http from "./http-auth"
-// import axios from 'axios';
 
 class UsersService {
 

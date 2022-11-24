@@ -1,5 +1,7 @@
 <template>
+  <v-app>
   <v-container >
+
     <v-row >
       <v-col v-for="service in listServices"
              :key="service.id_service"
@@ -45,6 +47,8 @@
       </v-col>
     </v-row>
   </v-container>
+  </v-app>
+
 </template>
 
 <script>
@@ -55,10 +59,11 @@ export default {
     listServices:[]
   }),
   methods:{
-    getMyServices(){
-      ServiceServices.getAllServicesByUser(1).then(
-          response=>{
-            this.listServices=response.data;
+    async getMyServices(){
+
+      await ServiceServices.getAllServicesByCategory(this.$router.currentRoute.params.id).then(
+          async response=>{
+            this.listServices= await response.data;
           }
       )
     },

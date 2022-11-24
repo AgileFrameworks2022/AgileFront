@@ -13,8 +13,7 @@
     <v-btn class="text-white" plain @click="goToAds">Ads</v-btn>
     <v-btn class="text-white" plain @click="seeDiscountedAdds">Promotions</v-btn>
     <v-btn class="text-white" plain @click="seeSubscriptions">Subscriptions</v-btn>
-    <v-btn class="text-white" plain @click="goToMyServices">Services</v-btn>
-    <v-btn class="text-white" plain @click="goToMyServ">My Services</v-btn>
+    <v-btn class="text-white" plain @click="goToMyServices">Categories</v-btn>
     <v-spacer></v-spacer>
 
     <v-btn class="text-white" icon @click="goToMyAds">

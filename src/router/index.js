@@ -95,7 +95,7 @@ const routes = [
     component:()=>import ('../components/createService')
   },
   {
-    path: '/myServices',
+    path: '/categories/:id',
     name: 'MyServices',
     component:()=>import ('../components/viewMyServices')
   }

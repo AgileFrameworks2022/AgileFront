@@ -1,75 +1,33 @@
 <template>
 
   <v-app  >
-    <div class="container " style="text-align:center" >
-      <vs-row>
-        <vs-col  v-for="cat in listCategories" :key="cat.id"  vs-type="flex" vs-justify="center" vs-align="center" w="3">
-          <v-btn class="green white--text ma-2" color="white"
-                 button
-                 text-color="black"   target="blank"
-                  @click="getServices(cat.id_category)"
-          >
-            #{{cat.name}}
-          </v-btn>
 
-        </vs-col>
-      </vs-row>
-    </div>
-    <div  v-if="isEmpty"  class="container " style="text-align:center">
-      {{textInit }}
-    </div>
-    <div v-if="!isEmpty" >
-      <v-container >
-        <v-row >
-          <v-col v-for="service in listServices"
-                 :key="service.id_service"
-                 cols="12"
-                 md="6">
-            <v-card>
-              <v-card-title class="font-weight-bold">
-                {{service.name}}
-              </v-card-title>
-              <v-img :src=service.url_image>
-              </v-img>
-              <v-card-text >
-                <v-chip class="ma-2"
-                        color="green"
-                        label
-                        text-color="white">
-                  {{ service.description }}
-                  <v-avatar right>
-                    <v-icon >mdi-bullhorn</v-icon>
-                  </v-avatar>
-                </v-chip>
-                <br/>
+    <v-container>
+      <v-row >
+        <v-col class="col-sm-12 col-md-4" v-for="category in listCategories" :key="category.id_category">
 
-              </v-card-text>
-              <v-card-actions fluid class="btns">
+          <v-card>
 
-                <v-btn class="green white--text ma-2" color="green"
-                       button
-                       text-color="white"   target="blank">
+            <v-img
+                class="white--text align-end"
+                :src="category.url_image" min-height="250px">
+              <v-hover>
+                <v-card-title style="background: rgba(9, 9, 9, 0.6);"  >
+                  <a :href="'/categories/'+category.id_category" style="text-decoration: none; color: aliceblue">{{category.name}}</a>
+                </v-card-title>
+              </v-hover>
+            </v-img>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
 
-                  <v-icon left>
-                    mdi-whatsapp
-                  </v-icon>
-                  More Info
-                </v-btn>
-
-              </v-card-actions>
-
-            </v-card>
-          </v-col>
-        </v-row>
-      </v-container>
-    </div>
   </v-app>
 
 </template>
 
 <script>
 import CategoryService from "../core/services/categoryService"
-import ServiceServices from "../core/services/services.services"
 export default {
   name: "FilterByCategory",
   data: () => ({
@@ -91,36 +49,17 @@ export default {
     textInit:"Por favor escoga una categoria"
   }),
   methods: {
-    getCategories(){
-      CategoryService.getAllCategories().then(
-          response =>{
-          this.listCategories=response.data;
+    async getCategories(){
+      await CategoryService.getAllCategories().then(
+          async response =>{
+          this.listCategories= await response.data;
       }
-      )
-    },
-    getServices(id){
-      console.log(id);
-      ServiceServices.getAllServicesByCategory(id).then(
-          response =>{
-            this.listServices=response.data;
-            if(this.listServices.isEmpty){
-              this.textInit="No hay Servicios en Esta categoria";
-              this.isEmpty=true;
-
-            }else{
-              this.isEmpty=false;
-            }
-          }
       )
     },
   },
   mounted() {
     this.getCategories();
-  },
-  watch:{
-
   }
-
 }
 </script>
 

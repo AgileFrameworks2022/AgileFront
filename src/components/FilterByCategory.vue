@@ -57,8 +57,8 @@ export default {
       )
     },
   },
-  mounted() {
-    this.getCategories();
+  async mounted() {
+    await this.getCategories();
   }
 }
 </script>

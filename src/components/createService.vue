@@ -16,93 +16,82 @@
       </v-btn>
     </template>
 
-    <v-card>
-      <v-card-title>
-        <span class="text-h5">New Service</span>
-      </v-card-title>
-
-      <v-card-text>
-        <v-container>
-          <v-row>
-
-            <v-col
-                cols="12"
-                sm="6"
-                md="4"
+    <template>
+        <v-card>
+          <v-container>
+            <validation-observer
+                ref="observer"
             >
-              <v-text-field
-                  v-model="defaultItem.name"
-                  label="title"
-              ></v-text-field>
-            </v-col>
-            <v-col
-                cols="12"
-                sm="6"
-                md="4"
-            >
-              <v-text-field
-                  v-model="defaultItem.description"
-                  label="description"
-              ></v-text-field>
-            </v-col>
-            <v-col
-                cols="12"
-                sm="6"
-                md="4"
-            >
-              <v-text-field
-                  v-model="defaultItem.price"
-                  label="discount"
-              ></v-text-field>
-            </v-col>
-            <v-col
-                cols="12"
-                sm="6"
-                md="4"
-            >
-              <v-text-field
-                  v-model="defaultItem.url_image"
-                  label="urlToImage"
-              ></v-text-field>
+              <form @submit.prevent="submit">
+                <validation-provider
+                    name="Name"
+                >
+                  <v-text-field
+                      v-model="name"
+                      label="Name"
+                      required
+                  ></v-text-field>
+                </validation-provider>
+                <validation-provider
+                    name="price"
+                >
+                  <v-text-field
+                      v-model="price"
+                      label="Price"
+                      required
+                  ></v-text-field>
+                </validation-provider>
+                <validation-provider
+                    name="description"
+                >
+                  <v-text-field
+                      label="Description"
+                      v-model="description"
+                      required
+                  ></v-text-field>
+                </validation-provider>
+                <validation-provider
+                >
+                  <v-text-field
+                      label="URL Image"
+                      v-model="url_image"
+                      required
+                  ></v-text-field>
+                </validation-provider>
+                <validation-provider
+                >
+                  <v-select
+                      item-text="name"
+                      v-model="select"
+                      :items="listCategories"
+                      label="Select"
+                      return-object
+                  >
+                  </v-select>
+                </validation-provider>
 
-              <div class="container " style="text-align:center" >
-                <vs-row>
-                  <vs-col  v-for="cat in listCategories" :key="cat.id"  vs-type="flex" vs-justify="center" vs-align="center" w="3">
-                    <v-btn class="green white--text ma-2" color="white"
-                           button
-                           text-color="black"   target="blank"
-                           @click="updateCurrentCat(cat)"
-                    >
-                      #{{cat.name}}
-                    </v-btn>
-
-                  </vs-col>
-                </vs-row>
-              </div>
-            </v-col>
-            <p>Current Category:{{this.currentCategory.name}}</p>
-          </v-row>
-        </v-container>
-      </v-card-text>
-
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn
-            color="blue darken-1"
-            text
-            @click="close"
-        >
-          Cancel
-        </v-btn>
-        <v-btn
-            color="blue darken-1"
-            text
-            @click="save"
-        >
-          Save
-        </v-btn>
-      </v-card-actions>
-    </v-card>
+                <v-btn
+                    class="mr-4"
+                    type="submit"
+                    :disabled="loading"
+                >
+                  <v-progress-circular
+                      v-if="loading"
+                      indeterminate
+                      color="primary"
+                      :width="3"
+                      :size="20"
+                  ></v-progress-circular>
+                  submit
+                </v-btn>
+                <v-btn @click="clear" :disabled="loading">
+                  clear
+                </v-btn>
+              </form>
+            </validation-observer>
+          </v-container>
+        </v-card>
+    </template>
 
   </v-dialog>
   <v-container >
@@ -135,11 +124,17 @@
 
             <v-btn class="red white--text ma-2" color="red"
                    button
-
+                  :disabled="loading_delete"
                    text-color="white"   target="blank"
                    @click="deleteById(service.id_service)"
             >
-
+              <v-progress-circular
+                  v-if="loading_delete"
+                  indeterminate
+                  color="danger"
+                  :width="3"
+                  :size="20"
+              ></v-progress-circular>
               <v-icon left>
                 mdi-delete
               </v-icon>
@@ -158,47 +153,27 @@
 <script>
 import CategoryService from "../core/services/categoryService"
 import ServiceServices from "../core/services/services.services"
+import { ValidationObserver, ValidationProvider} from 'vee-validate'
+import Swal from "sweetalert2";
+
 export default {
+  components: {
+    ValidationProvider,
+    ValidationObserver,
+  },
   name: "createService",
   data: () => ({
+    loading: false,
+    loading_delete: false,
+    name: '',
+    select: null,
+    price:0,
+    description:'',
+    url_image:'',
+
     listServices:[],
     dialog: false,
-    show: -1,
-    showAux: -1,
-    headers: [
-      {
-        text: 'id',
-        align: 'start',
-        sortable: false,
-        value: 'id',
-      },
-      { text: 'name', value: 'title' },
-      { text: 'description', value: 'description' },
-      { text: 'price', value: 'discount' },
-      { text: 'urlToImage', value: 'urlToImage' },
-    ],
-    defaultItem:{
-      name:'None',
-      price:0,
-      description:'None',
-      id_user:1,
-      id_category: 0,
-      url_image:''
-    },
     listCategories:[],
-    category:{
-      id:0,
-      name:'',
-      urlToImage:'',
-    },
-    currentCategory:{
-      id:0,
-      name:'None',
-      price:0,
-      description:'None',
-      id_user:1,
-      id_category: 0
-    },
   }),
   watch:{
     dialog (val) {
@@ -209,47 +184,86 @@ export default {
     close () {
       this.dialog = false;
     },
-    save(){
-      this.defaultItem.id_user=1;
-      this.defaultItem.id_category=this.currentCategory.id_category;
-      console.log(this.defaultItem);
-      ServiceServices.postNewService(this.defaultItem).then(
-         ()=>{
-           this.dialog=false
-         }
-      )
-    },
-    getCategories(){
-      CategoryService.getAllCategories().then(
-          response =>{
-            this.listCategories=response.data;
+    async getCategories(){
+      await CategoryService.getAllCategories().then(
+          async response =>{
+            this.listCategories= await response.data;
           }
       )
     },
-    updateCurrentCat(cat){
-      this.currentCategory=cat;
-    },
-    getMyServices(){
-      ServiceServices.getAllServicesByUser(1).then(
-          response=>{
-            this.listServices=response.data;
+    async getMyServices(){
+      await ServiceServices.getAllServicesByUser(Number(localStorage.getItem("user"))).then(
+          async response=>{
+            this.listServices= await response.data;
           }
       )
     },
-    deleteById(Id){
-      ServiceServices.deleteService(Id).then(
+    async deleteById(Id){
+      this.loading_delete = true;
+      await ServiceServices.deleteService(Id).then(
+          async()=>{
+            Swal.fire({
+              position: 'center',
+              icon: 'success',
+              title: 'El servicio ha sido borrado',
+              showConfirmButton: false,
+              timer: 1500
+            }).then();
+            await this.getMyServices().then(()=>{this.loading_delete = false;}).catch(()=>{this.dialog=false;});
+          }
+      ).catch(()=>{
+        Swal.fire({
+        position: 'center',
+        icon: 'error',
+        title: 'Ha ocurrido un problema, intentelo de nuevo',
+        showConfirmButton: false,
+        timer: 1500
+      }).then();this.dialog=false;this.loading_delete = false;});
+    },
+    async submit () {
+      this.loading = true;
+      await ServiceServices.postNewService({
+        name: this.name,
+        price: this.price,
+        description: this.description,
+        url_image: this.url_image,
+        id_user: Number(localStorage.getItem("user")),
+        id_category: this.select.id_category,
+      }).then(
           ()=>{
-
-            window.location.reload();
+            Swal.fire({
+              position: 'center',
+              icon: 'success',
+              title: 'El servicio ha sido publicado',
+              showConfirmButton: false,
+              timer: 1500
+            }).then();
+            this.loading = false;
+            this.dialog=false;
           }
-      );
+      ).catch(()=>{
+        Swal.fire({
+          position: 'center',
+          icon: 'error',
+          title: 'Ha ocurrido un problema, intentelo de nuevo',
+          showConfirmButton: false,
+          timer: 1500
+        }).then()
+        this.loading=false;})
 
-      //window.location.reload();
-    }
+      await this.getMyServices().catch(()=>{this.loading=false;});
+    },
+    clear () {
+      this.name= '';
+      this.select= null;
+      this.price=0;
+      this.description='';
+      this.url_image='';
+    },
   },
-  created() {
-    this.getCategories();
-    this.getMyServices();
+  async mounted() {
+    await this.getCategories();
+    await this.getMyServices();
   }
 }
 </script>

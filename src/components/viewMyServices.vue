@@ -78,8 +78,8 @@ export default {
       //window.location.reload();
     }
   },
-  mounted() {
-    this.getMyServices();
+  async mounted() {
+    await this.getMyServices();
   }
 }
 </script>
